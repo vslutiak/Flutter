@@ -11,6 +11,6 @@ Img params:
 
 Use unsplash to load img
 
-https://github.com/vslutiak/Flutter/blob/master/compare_img/Снимок%20экрана%202020-09-27%20в%2021.20.44.png
+
 
 https://github.com/vslutiak/Flutter/blob/master/compare_img/Снимок%20экрана%202020-09-27%20в%2021.20.56.png
