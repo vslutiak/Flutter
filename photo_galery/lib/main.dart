@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/rendering.dart';
 
 var arr = [
   'https://images.unsplash.com/phot-1607446926419-b0030ed4731b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1334&q=80',
@@ -119,6 +120,58 @@ void main() {
   ));
 }
 
+class SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight
+    extends SliverGridDelegate {
+  const SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight({
+    @required this.crossAxisCount,
+    this.mainAxisSpacing = 0.0,
+    this.crossAxisSpacing = 0.0,
+    this.height = 56.0,
+  })  : assert(crossAxisCount != null && crossAxisCount > 0),
+        assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
+        assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
+        assert(height != null && height > 0);
+
+  final int crossAxisCount;
+  final double mainAxisSpacing;
+  final double crossAxisSpacing;
+  final double height;
+
+  bool _debugAssertIsValid() {
+    assert(crossAxisCount > 0);
+    assert(mainAxisSpacing >= 0.0);
+    assert(crossAxisSpacing >= 0.0);
+    assert(height > 0.0);
+    return true;
+  }
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    assert(_debugAssertIsValid());
+    final double usableCrossAxisExtent =
+        constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1);
+    final double childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
+    final double childMainAxisExtent = height;
+    return SliverGridRegularTileLayout(
+      crossAxisCount: crossAxisCount,
+      mainAxisStride: childMainAxisExtent + mainAxisSpacing,
+      crossAxisStride: childCrossAxisExtent + crossAxisSpacing,
+      childMainAxisExtent: childMainAxisExtent,
+      childCrossAxisExtent: childCrossAxisExtent,
+      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
+    );
+  }
+
+  @override
+  bool shouldRelayout(
+      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight oldDelegate) {
+    return oldDelegate.crossAxisCount != crossAxisCount ||
+        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
+        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.height != height;
+  }
+}
+
 class MyApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MyAppState();
@@ -156,8 +209,14 @@ class _MyAppState extends State<MyApp> {
           child: GridView.builder(
               controller: _controller,
               itemCount: arr == null ? 0 : arr.length,
+              shrinkWrap: true,
               gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                  SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                crossAxisCount: 3,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
+                height: 150.0,
+              ),
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                     elevation: 5.0,
@@ -198,10 +257,17 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class SecondScreen extends StatelessWidget {
+// ignore: must_be_immutable
+class SecondScreen extends StatefulWidget {
   int _index;
 
   SecondScreen({int index}) : _index = index;
+
+  @override
+  _SecondScreenState createState() => _SecondScreenState();
+}
+
+class _SecondScreenState extends State<SecondScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,7 +276,7 @@ class SecondScreen extends StatelessWidget {
           Expanded(
               flex: 9,
               child: Image.network(
-                arr[_index],
+                arr[widget._index],
                 fit: BoxFit.fill,
               )),
           Expanded(
