@@ -127,7 +127,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String message = " ";
   ScrollController _controller;
-  int check = 0;
+  List<int> check = [];
 
   _scrollListener() {
     if (_controller.offset >= _controller.position.maxScrollExtent &&
@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: check != index
+                                builder: !check.contains(index)
                                     ? (context) => SecondScreen(
                                           index: index,
                                         )
@@ -183,7 +183,7 @@ class _MyAppState extends State<MyApp> {
                                       CircularProgressIndicator(
                                           value: downloadProgress.progress),
                               errorWidget: (context, url, error) {
-                                check = index;
+                                check.add(index);
                                 return (Icon(Icons.error));
                               }),
                         )));
