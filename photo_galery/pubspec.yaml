@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   cached_network_image: ^2.2.0+1
+  social_share: ^2.0.5
 
 
 
